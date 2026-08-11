@@ -759,14 +759,16 @@ static uint8_t HUB_GetPort(uint8_t * byte)
 
 USBH_HandleTypeDef * HUB_Process(USBH_HandleTypeDef * phost)
 {
-	static USBH_StatusTypeDef status = USBH_OK;
-	static USBH_HandleTypeDef * pusb = NULL;
-	static uint8_t usb_port = 0;
+  static USBH_StatusTypeDef status = USBH_OK;
+  static USBH_HandleTypeDef * pusb = NULL;
+  static uint8_t usb_port = 0;
+  
+  uint8_t port_valid_found = 0;
 
-	if(pusb != NULL)
-	{
-		status = USBH_Process(pusb);
-	}
+  if(pusb != NULL)
+  {
+    status = USBH_Process(pusb);
+  }
 
   if(status == USBH_OK)
   {
@@ -780,19 +782,22 @@ USBH_HandleTypeDef * HUB_Process(USBH_HandleTypeDef * phost)
           ph->hc[phost->Control.pipe_out].split_running == 0U && \
           HUB_Handle->ports_changed == 0U)
       {
-        if(usb_port < HUB_Handle->total_port_num)
+        while(usb_port < HUB_Handle->total_port_num)
         {
           USBH_HandleTypeDef * husb = (USBH_HandleTypeDef *) &(HUB_Handle->husb[usb_port]);
+          usb_port++;
 
           if(husb->valid)
           {
             pusb = husb;
             USBH_LL_SetupEP0(pusb);
+            
+            port_valid_found = 1;
+            break;
           }
-
-          usb_port++;
         }
-        else
+        
+        if(port_valid_found == 0)
         {
           pusb = phost;
           USBH_LL_SetupEP0(pusb);
@@ -807,5 +812,5 @@ USBH_HandleTypeDef * HUB_Process(USBH_HandleTypeDef * phost)
     }
   }
 
-	return pusb;
+  return pusb;
 }
