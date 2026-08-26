@@ -315,11 +315,11 @@ void mp3_lib_seek(audio_lib_handle_t * hlib)
     BSP_AUDIO_OUT_Stop(CODEC_PDWN_HW);
     mp3_lib_state = MP3_LIB_FILL_READBUFF;
 
-    ofs = (hlib->seek_pos * hlib->fp->fsize) / 100;
+    ofs = ((uint64_t)hlib->seek_pos * hlib->fp->fsize) / 100;
 
     f_lseek(hlib->fp, ofs);
     
-    hlib->time.elapsed_time = (hlib->fp->fptr * 8) / ((codec->info.bitrate / 1000) * 1024);    
+    hlib->time.elapsed_time = ((uint64_t)hlib->fp->fptr * 8) / ((codec->info.bitrate / 1000) * 1024);    
 }
 
 void mp3_lib_free(audio_lib_handle_t * hlib)

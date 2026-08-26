@@ -252,7 +252,7 @@ void remote_wav_lib_seek(audio_lib_handle_t * hlib)
 
     payload_size = hlib->remote.fsize - sizeof(wav_info);
     nbuffers = payload_size / hlib->buffer->size;
-    frame_pos = (hlib->seek_pos * nbuffers) / 100;
+    frame_pos = ((uint64_t)hlib->seek_pos * nbuffers) / 100;
 
     hlib->remote.fptr = sizeof(wav_info) + frame_pos * hlib->buffer->size;
 

@@ -458,7 +458,7 @@ void jmv_lib_seek(audio_lib_handle_t * hlib)
     if (read_state == AUDIO_LIB_READ_WAIT)
         return;
 
-    frame_pos = (hlib->seek_pos * codec->metadata.header.frame_nb) / 100;
+    frame_pos = ((uint64_t)hlib->seek_pos * codec->metadata.header.frame_nb) / 100;
 
     /* Compute file offset */
     ofs = sizeof(jmv_lib_header_t) + codec->metadata.header.frame_vect_size;

@@ -299,9 +299,9 @@ void remote_flac_lib_seek(audio_lib_handle_t * hlib)
     BSP_AUDIO_OUT_Stop(CODEC_PDWN_HW);
     flac_lib_state = FLAC_LIB_FILL_NETBUFF;
 
-    hlib->remote.fptr = (hlib->seek_pos * hlib->remote.fsize) / 100;
+    hlib->remote.fptr = ((uint64_t)hlib->seek_pos * hlib->remote.fsize) / 100;
 
-    hlib->time.elapsed_time = (hlib->remote.fptr * 8) / codec->bitrate;    
+    hlib->time.elapsed_time = ((uint64_t)hlib->remote.fptr * 8) / codec->bitrate;    
 }
 
 void remote_flac_lib_free(audio_lib_handle_t * hlib)
