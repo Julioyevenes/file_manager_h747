@@ -274,13 +274,16 @@ static void lv_fm_player_create(void)
     lv_obj_align(player_ppbtn, cont, LV_ALIGN_CENTER, 0, 0);    
     lv_obj_set_event_cb(player_ppbtn, lv_fm_player_btn_event_cb);
     
-    volume_slider = lv_slider_create(cont, NULL);
-    lv_slider_set_range(volume_slider, 0, 80);
-    lv_slider_set_value(volume_slider, hlib.volume, LV_ANIM_OFF);
-    lv_obj_set_width(volume_slider, LV_DPI / 10); 
-    lv_obj_set_height(volume_slider, lv_obj_get_height_fit(cont) - LV_DPX(100));
-    lv_obj_align(volume_slider, cont, LV_ALIGN_IN_RIGHT_MID, - LV_DPX(10), 0);    
-    lv_obj_set_event_cb(volume_slider, lv_fm_player_volume_slider_event_cb);    
+    if (hlib.device == OUTPUT_DEVICE_HEADPHONE)
+    {
+        volume_slider = lv_slider_create(cont, NULL);
+        lv_slider_set_range(volume_slider, 0, 80);
+        lv_slider_set_value(volume_slider, hlib.volume, LV_ANIM_OFF);
+        lv_obj_set_width(volume_slider, LV_DPI / 10); 
+        lv_obj_set_height(volume_slider, lv_obj_get_height_fit(cont) - LV_DPX(100));
+        lv_obj_align(volume_slider, cont, LV_ALIGN_IN_RIGHT_MID, - LV_DPX(10), 0);    
+        lv_obj_set_event_cb(volume_slider, lv_fm_player_volume_slider_event_cb);
+    }
 
     player_slider = lv_slider_create(cont, NULL);
     lv_slider_set_range(player_slider, 0, 100);
@@ -292,9 +295,13 @@ static void lv_fm_player_create(void)
     
     if(player_format == player_jmv)
     {
-        lv_obj_set_hidden(player_ppbtn, true);
-        lv_obj_set_hidden(volume_slider, true);
+        lv_obj_set_hidden(player_ppbtn, true);        
         lv_obj_set_hidden(player_slider, true);
+        
+        if (hlib.device == OUTPUT_DEVICE_HEADPHONE)
+        {
+            lv_obj_set_hidden(volume_slider, true);
+        }
     }
 }
 
@@ -386,8 +393,12 @@ static void lv_fm_player_btn_event_cb(lv_obj_t * btn, lv_event_t e)
             if(player_format == player_jmv)
             {
                 lv_obj_set_hidden(player_ppbtn, true);
-                lv_obj_set_hidden(volume_slider, true);
                 lv_obj_set_hidden(player_slider, true);
+                
+                if (hlib.device == OUTPUT_DEVICE_HEADPHONE)
+                {
+                    lv_obj_set_hidden(volume_slider, true);
+                }
             }
         }
         else if (strcmp(str, LV_SYMBOL_PAUSE) == 0)
@@ -444,8 +455,12 @@ static void lv_fm_player_img_event_cb(lv_obj_t * obj, lv_event_t e)
                 if(player_format == player_jmv)
                 {
                     lv_obj_set_hidden(player_ppbtn, false);
-                    lv_obj_set_hidden(volume_slider, false);
                     lv_obj_set_hidden(player_slider, false);
+                    
+                    if (hlib.device == OUTPUT_DEVICE_HEADPHONE)
+                    {
+                        lv_obj_set_hidden(volume_slider, false);
+                    }
                 }
                 
                 last_e = e;
@@ -521,7 +536,12 @@ void lv_fm_player_process_task(lv_task_t * task)
     {
         lv_fm_player_create();
         player_seek_task = lv_task_create(lv_fm_player_seek_task, 100, LV_TASK_PRIO_MID, hlib);
-        player_volume_task = lv_task_create(lv_fm_player_volume_task, 100, LV_TASK_PRIO_MID, hlib);        
+        
+        if (hlib->device == OUTPUT_DEVICE_HEADPHONE)
+        {
+            player_volume_task = lv_task_create(lv_fm_player_volume_task, 100, LV_TASK_PRIO_MID, hlib);
+        }
+        
         ui_created = 1;
     }
 
